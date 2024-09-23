@@ -1,0 +1,27 @@
+RG 0000h     ; Indicar al ensamblador la dirección de inicio
+
+START:
+    LD HL, 4000h  ; Cargar en HL el número de 16 bits (dividendo)
+    LD E, 80h     ; Cargar en E el número de 8 bits (divisor)
+
+    XOR A         ; A = 0, limpiar el acumulador (para el cociente)
+    LD B, 16      ; B = 16, contador de bits
+
+DIV_LOOP:
+    SLA L         ; Desplazar a la izquierda L (bit menos significativo de HL)
+    RL H          ; Desplazar a la izquierda H (bit más significativo de HL)
+    RL A          ; Desplazar a la izquierda el cociente (A)
+
+    CP E          ; Comparar el valor en H con el divisor E
+    JR C, NO_SUB  ; Si H < E, no se puede restar, saltar
+
+    SUB E         ; Si H >= E, restar E de H (resta parcial)
+    INC A         ; Aumentar el cociente en 1
+
+NO_SUB:
+    DJNZ DIV_LOOP ; Decrementar B y repetir el bucle hasta que B sea 0
+
+    ; En este punto, el cociente está en A y el residuo en H
+    NOP           ; Fin del programa (esperar)
+
+    END           ; Fin de la compilación
